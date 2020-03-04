@@ -9,16 +9,20 @@ class NearEarthObject(object):
         """
         :param kwargs:    dict of attributes about a given Near Earth Object, only a subset of attributes used
         """
-        neo_id=kwargs["id"]
-        name=kwargs["name"]
-        height=kwargs["absolute_magnitude_h"]
-        diameter=kwargs["estimated_diameter_max_kilometers"]
-        hazardous=kwargs["is_potentially_hazardous_asteroid"]
-        orbits=[]
+        self.neo_id=kwargs["id"]
+        self.name=kwargs["name"]
+        self.height=kwargs["absolute_magnitude_h"]
+        self.diameter=kwargs["estimated_diameter_max_kilometers"]
+        self.hazardous=kwargs["is_potentially_hazardous_asteroid"]
+        self.orbits=[]
         # TODO: What instance variables will be useful for storing on the Near Earth Object?
 
     def __repr__(self):
-        print("neo_id={} name={} height={} diameter={} hazardous={} orbits={}".format(self.neo_id,self.name,self.height,self.diameter,self.hazardous,self.orbits))
+        #print("neo_id={} name={} height={} diameter={} hazardous={}".format(self.neo_id,self.name,self.height,self.diameter,self.hazardous))
+        return {"neo_id":self.neo_id,"name":self.name,"height":self.height,"diameter":self.diameter,"hazardous":self.hazardous}
+
+    def __str__(self):
+        return "neo_id={} name={} height={} diameter={} hazardous={}".format(self.neo_id,self.name,self.height,self.diameter,self.hazardous)
 
     def update_orbits(self, orbit):
         """
@@ -45,11 +49,13 @@ class OrbitPath(object):
         :param kwargs:    dict of attributes about a given orbit, only a subset of attributes used
         """
         # TODO: What instance variables will be useful for storing on the Near Earth Object?
-        neo_reference_id=kwargs["neo_reference_id"]
-        speed=kwargs["kilometers_per_hour"]
-        approach_date=kwargs["close_approach_date"]
-        distance=kwargs["miss_distance_kilometers"]
-        orbiting_body=kwargs["orbiting_body"]
+        self.neo_reference_id=kwargs["neo_reference_id"]
+        self.speed=kwargs["kilometers_per_hour"]
+        self.approach_date=kwargs["close_approach_date"]
+        self.distance=kwargs["miss_distance_kilometers"]
+        self.orbiting_body=kwargs["orbiting_body"]
 
+    def __str__(self):
+        return "neo_reference_id={} speed={} approach_date={} distance={} orbiting_body={}".format(self.neo_reference_id,self.speed,self.approach_date,self.distance,self.orbiting_body)
     def __repr__(self):
-        print("neo_reference_id={} speed={} approach_date={} distance=kwargs{} orbiting_body={}".format(self.neo_reference_id,self.speed,self.approach_date,self.distance,self.orbiting_body))
+        return {"neo_reference_id":self.neo_reference_id,"speed":self.speed,"approach_date":self.approach_date, "distance":self.distance,"orbiting_body":self.orbiting_body}

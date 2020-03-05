@@ -1,5 +1,6 @@
 from collections import namedtuple
 from enum import Enum
+from datetime import datetime,timedelta
 
 from exceptions import UnsupportedFeature
 from models import NearEarthObject, OrbitPath
@@ -35,6 +36,30 @@ class Query(object):
         :param kwargs: dict of search query parameters to determine which SearchOperation query to use
         """
         # TODO: What instance variables will be useful for storing on the Query object?
+        self.Selectors.number=kwargs.get("number")
+        self.Selectors.filters=dict()
+        if(kwargs.get("is_hazardous") is not None):
+            self.Selectors.filters["hazardous"]=kwargs.get("is_hazardous")
+        if(kwargs.get("diameter") is not None):
+            self.Selectors.filters["diameter"]=kwargs.get("diameter")
+        if(kwargs.get("distance") is not None):
+            self.Selectors.filters["distance"]=kwargs.get("distance")
+        if(kwargs.get("return_object")=="Path"):
+            self.Selectors.return_object=self.ReturnObjects["Path"]
+        else:
+            self.Selectors.return_object=self.ReturnObjects["NEO"]
+
+        # self.Selectors.return_object=kwargs["return_object"]
+        if(kwargs.get("date") is not None):
+            self.DateSearch.type=DateSearch.equals
+            self.DateSearch.values=kwargs.get("date")
+        else:
+            self.DateSearch.type=DateSearch.between
+            self.DateSearch.values=dict()
+            self.DateSearch.values["start"]=kwargs.get("start_date")
+            self.DateSearch.values["end"]=kwargs.get("end_date")
+        self.Selectors.date_search=self.DateSearch
+
 
     def build_query(self):
         """
@@ -45,6 +70,8 @@ class Query(object):
         """
 
         # TODO: Translate the query parameters into a QueryBuild.Selectors object
+        # self.QueryBuild.Selectors=self.Selectors
+        return self.Selectors
 
 
 class Filter(object):
@@ -106,6 +133,12 @@ class NEOSearcher(object):
         """
         self.db = db
         # TODO: What kind of an instance variable can we use to connect DateSearch to how we do search?
+        self.db_data=db.retrieve()
+        self.neo_date_dict=self.db_data[0]
+        self.orbit_date_dict=self.db_data[1]
+        self.neo_name_dict=self.db_data[2]
+        # DateSearchType=pass
+
 
     def get_objects(self, query):
         """
@@ -121,4 +154,49 @@ class NEOSearcher(object):
         # TODO: This is a generic method that will need to understand, using DateSearch, how to implement search
         # TODO: Write instance methods that get_objects can use to implement the two types of DateSearch your project
         # TODO: needs to support that then your filters can be applied to. Remember to return the number specified in
-        # TODO: the Query.Selectors as well as in the return_type from Query.Selectors
+        # TODO: the Query.Selectors as well as in the return_type from Query.Selector
+        if(query.date_search.type==DateSearch.between):
+            results=self.date_between(query)
+        elif(query.date_search.type==DateSearch.equals):
+            results=self.date_equals(query)
+        
+        return results
+    
+
+    def date_equals(self,query):
+        numbers=int(query.number)
+        date=query.date_search.values
+        object_type=query.return_object
+        #orbits=self.orbit_date_dict[date]
+        if(object_type==NearEarthObject):
+            return self.neo_date_dict[date][:numbers]
+        elif(object_type==OrbitPath):
+            return self.orbit_date_dict[date][:numbers]
+
+    def date_between(self,query):
+        numbers=int(query.number)
+        start=query.date_search.values["start"]
+        end=query.date_search.values["end"]
+        start=datetime.strptime(start, '%Y-%m-%d')
+        end=datetime.strptime(end, '%Y-%m-%d')
+        end=end+timedelta(days=1)
+        date_array =(start + timedelta(days=x) for x in range(0, (end-start).days))
+        object_type=query.return_object
+        if(object_type==NearEarthObject):
+            neo_list=list()
+            # num=len(date_array)
+            for date in date_array:
+                date=date.strftime('%Y-%m-%d')
+                neo_list=neo_list+self.neo_date_dict[date]
+                if(len(neo_list)>=numbers):
+                    break
+            return neo_list[:numbers]
+        elif(object_type==OrbitPath):
+            orbit_list=list()
+            # num=len(date_array)
+            for date in date_array:
+                date=date.strftime('%d-%m-%Y')
+                orbit_list=orbit_list+self.orbit_date_dict[date]
+                if(len(orbit_list)>=numbers):
+                    break
+            return neo_list[:numbers]

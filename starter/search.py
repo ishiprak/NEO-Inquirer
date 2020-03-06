@@ -137,12 +137,21 @@ class Filter(object):
         """
         # TODO: Takes a list of NearEarthObjects and applies the value of its filter operation to the results
         filtered_results=list()
-        for result in results:
-            value=self.value
-            if(self.field=="distance" or self.field=="diameter"):
-                value=float(value)
-            if(self.Operators[self.operation](getattr(result, self.Options[self.field]),value)):
-                filtered_results.append(result)
+        value=self.value
+        if(self.field=="distance" or self.field=="diameter"):
+            value=float(value)
+        if(self.field=="diameter" or self.field=="is_hazardous"):
+            for result in results:
+                if(self.Operators[self.operation](getattr(result, self.Options[self.field]),value)):
+                    filtered_results.append(result)
+        elif(self.field=="distance"):    
+            for result in results:
+                orbits=result.orbits
+                for orbit in orbits:
+                    if(self.Operators[self.operation](getattr(orbit, self.Options[self.field]),value)):
+                        filtered_results.append(result)
+                        break
+
         return filtered_results
 
 

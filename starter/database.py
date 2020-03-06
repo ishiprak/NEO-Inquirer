@@ -19,6 +19,7 @@ class NEODatabase(object):
         self.filename=filename
         self.neo_date_dict=dict()
         self.orbit_date_dict=dict()
+        # self.orbit_id_dict=dict()
         self.neo_name_dict=dict()
 
     def load_data(self, filename=None):
@@ -37,6 +38,7 @@ class NEODatabase(object):
         self.neo_date_dict.clear()
         self.neo_name_dict.clear()
         self.orbit_date_dict.clear()
+        # self.orbit_id_dict.clear()
         # TODO: Load data from csv file.
         # TODO: Where will the data be stored?
 

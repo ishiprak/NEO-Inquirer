@@ -38,7 +38,9 @@ class NEODatabase(object):
             raise Exception('Cannot load data, no filename provided')
 
         filename = filename or self.filename
-
+        self.neo_date_dict.clear()
+        self.neo_name_dict.clear()
+        self.orbit_date_dict.clear()
         # TODO: Load data from csv file.
         # TODO: Where will the data be stored?
 

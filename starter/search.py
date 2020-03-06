@@ -1,10 +1,10 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from enum import Enum
 from datetime import datetime,timedelta
 
 from exceptions import UnsupportedFeature
 from models import NearEarthObject, OrbitPath
-
+import operator
 
 class DateSearch(Enum):
     """
@@ -37,13 +37,14 @@ class Query(object):
         """
         # TODO: What instance variables will be useful for storing on the Query object?
         self.Selectors.number=kwargs.get("number")
-        self.Selectors.filters=dict()
-        if(kwargs.get("is_hazardous") is not None):
-            self.Selectors.filters["hazardous"]=kwargs.get("is_hazardous")
-        if(kwargs.get("diameter") is not None):
-            self.Selectors.filters["diameter"]=kwargs.get("diameter")
-        if(kwargs.get("distance") is not None):
-            self.Selectors.filters["distance"]=kwargs.get("distance")
+        # self.Selectors.filters=dict()
+        # if(kwargs.get("is_hazardous") is not None):
+        #     self.Selectors.filters["hazardous"]=kwargs.get("is_hazardous")
+        # if(kwargs.get("diameter") is not None):
+        #     self.Selectors.filters["diameter"]=kwargs.get("diameter")
+        # if(kwargs.get("distance") is not None):
+        #     self.Selectors.filters["distance"]=kwargs.get("distance")
+        self.Selectors.filters=kwargs.get("filter")
         if(kwargs.get("return_object")=="Path"):
             self.Selectors.return_object=self.ReturnObjects["Path"]
         else:
@@ -81,13 +82,27 @@ class Filter(object):
     """
     Options = {
         # TODO: Create a dict of filter name to the NearEarthObject or OrbitalPath property
+        "distance":"miss_distance_kilometers",
+        "diameter":"diameter_min_km",
+        # "max_diameter":"diameter_max_km",
+        "is_hazardous":"is_potentially_hazardous_asteroid"
+        # "neo_distance"
+        # "neo_distance"
+
     }
 
     Operators = {
         # TODO: Create a dict of operator symbol to an Operators method, see README Task 3 for hint
+        "<":operator.lt,
+        "<=":operator.le,
+        ">":operator.gt,
+        ">=":operator.ge,
+        "=":operator.eq,
+        "!=":operator.ne
+
     }
 
-    def __init__(self, field, object, operation, value):
+    def __init__(self, field, field_object, operation, value):
         """
         :param field:  str representing field to filter on
         :param field:  str representing object to filter on
@@ -95,7 +110,7 @@ class Filter(object):
         :param value: str representing value to filter for
         """
         self.field = field
-        self.object = object
+        self.object = field_object
         self.operation = operation
         self.value = value
 
@@ -110,6 +125,21 @@ class Filter(object):
 
         # TODO: return a defaultdict of filters with key of NearEarthObject or OrbitPath and value of empty list or list of Filters
 
+        filters=defaultdict(list)
+        if(filter_options is not None):
+            for filter_option in filter_options:
+                filter_option=filter_option.split(":")
+                field=filter_option[0]
+                operation=filter_option[1]
+                value=filter_option[2]
+                if(field!="distance"):
+                    filters["NearEarthObject"].append((field,operation,value))
+                else:
+                    filters["OrbitPath"].append((field,operation,value))
+            return filters
+        else:
+            return None
+
     def apply(self, results):
         """
         Function that applies the filter operation onto a set of results
@@ -118,6 +148,15 @@ class Filter(object):
         :return: filtered list of Near Earth Object results
         """
         # TODO: Takes a list of NearEarthObjects and applies the value of its filter operation to the results
+        filtered_results=list()
+        for result in results:
+            value=self.value
+            if(self.field=="distance" or self.field=="diameter"):
+                value=float(value)
+            if(self.Operators[self.operation](getattr(result, self.Options[self.field]),value)):
+                filtered_results.append(result)
+        return filtered_results
+
 
 
 class NEOSearcher(object):
@@ -159,22 +198,30 @@ class NEOSearcher(object):
             results=self.date_between(query)
         elif(query.date_search.type==DateSearch.equals):
             results=self.date_equals(query)
-        
-        return results
+        filters=Filter.create_filter_options(query.filters) or None
+        numbers=int(query.number)
+        final_results=results
+        if(filters is not None):
+            for key in filters:
+                for filter_option in filters[key]:
+                    Filters=Filter(filter_option[0],key,filter_option[1],filter_option[2])
+                    final_results=Filters.apply(final_results)
+                    if(len(final_results)>=numbers):
+                        break
+        return final_results[:numbers]
     
 
     def date_equals(self,query):
-        numbers=int(query.number)
         date=query.date_search.values
         object_type=query.return_object
         #orbits=self.orbit_date_dict[date]
         if(object_type==NearEarthObject):
-            return self.neo_date_dict[date][:numbers]
+            return self.neo_date_dict[date]
         elif(object_type==OrbitPath):
-            return self.orbit_date_dict[date][:numbers]
+            return self.orbit_date_dict[date]
 
     def date_between(self,query):
-        numbers=int(query.number)
+        #numbers=int(query.number)
         start=query.date_search.values["start"]
         end=query.date_search.values["end"]
         start=datetime.strptime(start, '%Y-%m-%d')
@@ -188,15 +235,15 @@ class NEOSearcher(object):
             for date in date_array:
                 date=date.strftime('%Y-%m-%d')
                 neo_list=neo_list+self.neo_date_dict[date]
-                if(len(neo_list)>=numbers):
-                    break
-            return neo_list[:numbers]
+                # if(len(neo_list)>=numbers):
+                #     break
+            return neo_list
         elif(object_type==OrbitPath):
             orbit_list=list()
             # num=len(date_array)
             for date in date_array:
                 date=date.strftime('%d-%m-%Y')
                 orbit_list=orbit_list+self.orbit_date_dict[date]
-                if(len(orbit_list)>=numbers):
-                    break
-            return neo_list[:numbers]
+                # if(len(orbit_list)>=numbers):
+                #     break
+            return neo_list

@@ -37,20 +37,12 @@ class Query(object):
         """
         # TODO: What instance variables will be useful for storing on the Query object?
         self.Selectors.number=kwargs.get("number")
-        # self.Selectors.filters=dict()
-        # if(kwargs.get("is_hazardous") is not None):
-        #     self.Selectors.filters["hazardous"]=kwargs.get("is_hazardous")
-        # if(kwargs.get("diameter") is not None):
-        #     self.Selectors.filters["diameter"]=kwargs.get("diameter")
-        # if(kwargs.get("distance") is not None):
-        #     self.Selectors.filters["distance"]=kwargs.get("distance")
         self.Selectors.filters=kwargs.get("filter")
         if(kwargs.get("return_object")=="Path"):
             self.Selectors.return_object=self.ReturnObjects["Path"]
         else:
             self.Selectors.return_object=self.ReturnObjects["NEO"]
 
-        # self.Selectors.return_object=kwargs["return_object"]
         if(kwargs.get("date") is not None):
             self.DateSearch.type=DateSearch.equals
             self.DateSearch.values=kwargs.get("date")
@@ -71,7 +63,6 @@ class Query(object):
         """
 
         # TODO: Translate the query parameters into a QueryBuild.Selectors object
-        # self.QueryBuild.Selectors=self.Selectors
         return self.Selectors
 
 
@@ -84,10 +75,7 @@ class Filter(object):
         # TODO: Create a dict of filter name to the NearEarthObject or OrbitalPath property
         "distance":"miss_distance_kilometers",
         "diameter":"diameter_min_km",
-        # "max_diameter":"diameter_max_km",
         "is_hazardous":"is_potentially_hazardous_asteroid"
-        # "neo_distance"
-        # "neo_distance"
 
     }
 
@@ -176,7 +164,6 @@ class NEOSearcher(object):
         self.neo_date_dict=self.db_data[0]
         self.orbit_date_dict=self.db_data[1]
         self.neo_name_dict=self.db_data[2]
-        # DateSearchType=pass
 
 
     def get_objects(self, query):
@@ -214,14 +201,12 @@ class NEOSearcher(object):
     def date_equals(self,query):
         date=query.date_search.values
         object_type=query.return_object
-        #orbits=self.orbit_date_dict[date]
         if(object_type==NearEarthObject):
             return self.neo_date_dict[date]
         elif(object_type==OrbitPath):
             return self.orbit_date_dict[date]
 
     def date_between(self,query):
-        #numbers=int(query.number)
         start=query.date_search.values["start"]
         end=query.date_search.values["end"]
         start=datetime.strptime(start, '%Y-%m-%d')
@@ -231,19 +216,13 @@ class NEOSearcher(object):
         object_type=query.return_object
         if(object_type==NearEarthObject):
             neo_list=list()
-            # num=len(date_array)
             for date in date_array:
                 date=date.strftime('%Y-%m-%d')
                 neo_list=neo_list+self.neo_date_dict[date]
-                # if(len(neo_list)>=numbers):
-                #     break
             return neo_list
         elif(object_type==OrbitPath):
             orbit_list=list()
-            # num=len(date_array)
             for date in date_array:
                 date=date.strftime('%d-%m-%Y')
                 orbit_list=orbit_list+self.orbit_date_dict[date]
-                # if(len(orbit_list)>=numbers):
-                #     break
             return neo_list

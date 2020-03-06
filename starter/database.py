@@ -20,10 +20,6 @@ class NEODatabase(object):
         self.neo_date_dict=dict()
         self.orbit_date_dict=dict()
         self.neo_name_dict=dict()
-        # with open(filename, newline='') as csvfile:
-        #     csvreader = csv.reader(csvfile)
-        #     for row in csvreader:
-
 
     def load_data(self, filename=None):
         """
@@ -44,8 +40,6 @@ class NEODatabase(object):
         # TODO: Load data from csv file.
         # TODO: Where will the data be stored?
 
-        # if(not filename):
-        #     filename=self.filename
         with open(filename, newline='') as csvfile:
             csvreader = csv.reader(csvfile)
             c=-1
@@ -76,20 +70,3 @@ class NEODatabase(object):
     def retrieve(self):
         return (self.neo_date_dict,self.orbit_date_dict,self.neo_name_dict)
 
-
-    # def print_data(self):
-    #     print("**************************************************************************************************")
-    #     print("Neo_date_dict: ")
-    #     for key in self.neo_date_dict:
-    #         if(self.neo_date_dict[key] is not None):
-    #             for i in self.neo_date_dict[key]:
-    #                 print("Date of approach: ",key)
-    #                 print("**************************************************************************************************")
-    #                 print(i)
-    #     print("**************************************************************************************************")
-    #     print("Neo_name_dict: ")
-    #     for key in self.neo_name_dict:
-    #         if(self.neo_name_dict[key] is not None):
-    #             for i in self.neo_name_dict[key].orbits:
-    #                 print(i)
-    #         print(key)

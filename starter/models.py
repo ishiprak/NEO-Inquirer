@@ -19,7 +19,7 @@ class NearEarthObject(object):
         # TODO: What instance variables will be useful for storing on the Near Earth Object?
 
     def __repr__(self):
-        #print("neo_id={} name={} height={} diameter={} hazardous={}".format(self.neo_id,self.name,self.height,self.diameter,self.hazardous))
+        
         return {"neo_id":self.neo_id,"name":self.name,"height":self.height,"min_diameter":self.diameter_min_km,"max_diameter":self.diameter_max_km,"hazardous":self.is_potentially_hazardous_asteroid}
 
     def __str__(self):

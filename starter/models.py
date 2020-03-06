@@ -19,11 +19,11 @@ class NearEarthObject(object):
         # TODO: What instance variables will be useful for storing on the Near Earth Object?
 
     def __repr__(self):
-        
-        return {"neo_id":self.neo_id,"name":self.name,"height":self.height,"min_diameter":self.diameter_min_km,"max_diameter":self.diameter_max_km,"hazardous":self.is_potentially_hazardous_asteroid}
+
+        return {"neo_id":self.neo_id,"name":self.name,"height":self.height,"min_diameter":self.diameter_min_km,"max_diameter":self.diameter_max_km,"hazardous":self.is_potentially_hazardous_asteroid,"No. of orbits":len(self.orbits)}
 
     def __str__(self):
-        return "neo_id={}    name={}    height={}    min_diameter={}    max_diameter={}    hazardous={}".format(self.neo_id,self.name,self.height,self.diameter_min_km,self.diameter_max_km,self.is_potentially_hazardous_asteroid)
+        return "neo_id={} | name={} | height(km)={} | min_diameter(km)={} | max_diameter(km)={} | hazardous={} | No. of orbits={}".format(self.neo_id,self.name,self.height,self.diameter_min_km,self.diameter_max_km,self.is_potentially_hazardous_asteroid,len(self.orbits))
 
     def update_orbits(self, orbit):
         """
@@ -58,6 +58,6 @@ class OrbitPath(object):
         self.orbiting_body=kwargs["orbiting_body"]
 
     def __str__(self):
-        return "neo_reference_id={}    neo_name={}    speed={}    approach_date={}    distance={}    orbiting_body={}".format(self.neo_reference_id,self.neo_name,self.speed,self.close_approach_date,self.miss_distance_kilometers,self.orbiting_body)
+        return "neo_reference_id={} | neo_name={} | speed(km/h)={} | approach_date={} | miss_distance(km)={} | orbiting_body={}".format(self.neo_reference_id,self.neo_name,self.speed,self.close_approach_date,self.miss_distance_kilometers,self.orbiting_body)
     def __repr__(self):
-        return {"neo_reference_id":self.neo_reference_id,"neo_name":self.neo_name,"speed":self.speed,"approach_date":self.close_approach_date, "distance":self.miss_distance_kilometers,"orbiting_body":self.orbiting_body}
+        return {"neo_reference_id":self.neo_reference_id,"neo_name":self.neo_name,"speed":self.speed,"approach_date":self.close_approach_date, "miss_distance":self.miss_distance_kilometers,"orbiting_body":self.orbiting_body}

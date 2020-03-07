@@ -23,7 +23,7 @@
 -- LINK TO THE SOURCE CODE (FOR REFERENCE TO THE BUG RESOLVED) 
 * Link: `/starter/search.py`, line 140 to line 161 (class: "Filter", method: "apply")
 ** Link provided is relative to the "root" of the project , where "starter" directory is located. 
-* git-reference: Checkout git-commit `` and use ` git diff HEAD HEAD^ `, to see the modifications done for the bug resolution. 
+* git-reference: Checkout git-commit `ab21e2a` and use ` git diff HEAD HEAD^ `, to see the modifications done for the bug resolution. 
 
 -- EXPLANATION OF THE BUG RESOLUTION (HOW THE BUG WAS RESOLVED)
 * The cause of the bug/error as has been mentioned above was that despite the type of return object being specified by the user of the 

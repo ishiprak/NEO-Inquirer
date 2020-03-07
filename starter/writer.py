@@ -71,7 +71,7 @@ class NEOWriter(object):
                         print("***************************** Near Earth Object {} *********************************".format(count))
                         print(neo)
                         print()
-                        print("***********Orbit Paths*************")
+                        print("*********** Orbit Paths *************")
                         for orbit in neo.orbits:
                             print(orbit)
                 elif(type(data[0])==OrbitPath):

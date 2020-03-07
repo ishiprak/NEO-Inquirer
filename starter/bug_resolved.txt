@@ -1,0 +1,46 @@
+-- BUG: 
+* On searching the NEO Database with filters (for search requirement 2 and afterwards), while using the return-object as "Path" for 
+  "OrbitPath" objects, error or bug arose before this resolve.
+
+-- BUG/ERROR AS PER PYTHON INTERPRETER:
+>> Input: 
+` ./main.py csv_file -r Path -n 10 --start_date 2020-01-01 --end_date 2020-01-10 --filter "is_hazardous:=:False" `
+
+>> ERROR:
+` Traceback (most recent call last):
+   File "./main.py", line 121, in <module>
+     results = NEOSearcher(db).get_objects(query_selectors)
+   File "/mnt/c/Users/ASUS/Desktop/NEO/nd303-c1-advanced-python-techniques-project-starter/starter/search.py", line 204, in get_objects
+     final_results=Filters.apply(final_results)
+   File "/mnt/c/Users/ASUS/Desktop/NEO/nd303-c1-advanced-python-techniques-project-starter/starter/search.py", line 145, in apply
+     if(self.Operators[self.operation](getattr(result, self.Options[self.field]),value)):
+  AttributeError: 'OrbitPath' object has no attribute 'is_potentially_hazardous_asteroid' `
+
+-- TOOLS USED TO RESOLVE THE BUG:
+* VScode(Visual Studio Code) Debugger console 
+* Python Interpreter Run-time Traceback Output and Terminal console
+
+-- LINK TO THE SOURCE CODE (FOR REFERENCE TO THE BUG RESOLVED) 
+* Link: `/starter/search.py`, line 140 to line 161 (class: "Filter", method: "apply")
+** Link provided is relative to the "root" of the project , where "starter" directory is located. 
+* git-reference: Checkout git-commit `` and use ` git diff HEAD HEAD^ `, to see the modifications done for the bug resolution. 
+
+-- EXPLANATION OF THE BUG RESOLUTION (HOW THE BUG WAS RESOLVED)
+* The cause of the bug/error as has been mentioned above was that despite the type of return object being specified by the user of the 
+  program (viz. "NEO" or "Path"), the Filter.apply method was always applying all filter parameters on "NearEarthObject" objects only 
+  and hence the error was occuring.
+* So for the implementation of the "NEOSearcher.apply" method, so that it can also search and extract data for "OrbitPath" or "Path" 
+  type objects, two seperate cases in the "NEOSearcher.apply" have been implemented therefore. 
+* One case handles specifically the query when the "return_object" is "NEO" while another case handles the situation when the 
+  "return_object" is "Path". 
+* The case for "NEO" type "return_object" has been implemented as before, since the previous implementation was working as expected 
+  for "NEO" type "return_object" given as query. 
+* Therefore, for the newer implementation for the query for "Path" type "return_object", for the filter_fields as "is_hazardous"
+  and "diameter", which are "NearEarthObject" Object's parameters, for each "OrbitPath" object got in the list of results to be 
+  filtered on in the "NEOSearcher.apply" method, "neo_name" parameter of "OrbitPath" has been used to fetch the respective
+  "NearEarthObject" and hence concerned filters is applied on them and if the result is true then the respective "OrbitPath" object
+  is appended in the list of "final_results", otherwise ignored.
+* Finally, the filtered result list- "final_results" is returned to the caller of "NEOSearcher.apply" method for the "NeoWriter" 
+  method to Outputthe results as desired.
+
+

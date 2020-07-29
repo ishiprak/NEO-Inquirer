@@ -75,14 +75,14 @@ Each row in the `neo_data.csv` represents a single orbit path for a Near Earth O
 
 The project is broken into the following files:
 
-- `main.py`: Python main script to run the project. **This is the completed file that provides the command-line interface. You will not need to modify this file.**
+- `main.py`: Python main script to run the project.
 - `database.py`: Python module with database logic (e.g. reading the data, storing the data)
 - `exceptions.py`: Python module with any custom exceptions logic
 - `models.py` Python module with models -- objects representing `NearEarthObject` and `OrbitPath`
 - `search.py`: Python module with search logic (e.g. the different date searchers)
 - `writer.py`: Python module with write logic (e.g. write to file, print to terminal)
 
-The project additionally has prewritten tests that will be used to help you during the completion of task three (defined below):
+The project additionally has prewritten tests that can be used to validate the output as per corresponding inputs (defined below):
 
 - `tests/test_neo_database.py`: Python unittest module with 8 tests, each requirement has 2 tests.
 
